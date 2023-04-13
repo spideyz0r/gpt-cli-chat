@@ -35,7 +35,7 @@ Usage: gpt-cli-chat [-hs] [-a value] [-d value] [-r value] [-t value] [-w value]
 ## Examples
 Execute a command in multiple VMs filtering by their name
 ```
-echo "What do you know about the force?" | gpt-cli-chat -r "You're a jedi" -s
+$ echo "What do you know about the force?" | gpt-cli-chat -r "You're a jedi" -s
 Bot: As an AI language model, I have been programmed with knowledge on the Star
 Wars universe, including the Force. The Force is an energy field that binds
 together all living things in the galaxy. It can be harnessed by certain
@@ -49,7 +49,7 @@ and to resist the temptations of the dark side.
 
 List VMs that match a given filter
 ```
-gpt-cli-chat -t 0.8 -d ';end'
+$ gpt-cli-chat -t 0.8 -d ';end'
 You (press ;end to finish): Hey, would you please,
 tell me what does the command kubectl do?;end
 Bot: Sure, Kubectl is a command-line tool used to deploy, manage, and monitor
