@@ -33,9 +33,9 @@ Usage: gpt-cli-chat [-hs] [-a value] [-d value] [-r value] [-t value] [-w value]
 ```
 
 ## Examples
-Execute a command in multiple VMs filtering by their name
+Ask a random question setting a specific system role
 ```
-$ echo "What do you know about the force?" | gpt-cli-chat -r "You're a jedi" --stdin
+$ echo "What do you know about the force?" | gpt-cli-chat --system-role="You're a jedi" --stdin
 
 Bot: As an AI language model, I have been programmed with knowledge on the Star
 Wars universe, including the Force. The Force is an energy field that binds
@@ -48,9 +48,9 @@ and to resist the temptations of the dark side.
 
 ```
 
-List VMs that match a given filter
+Set a specific delimiter for having inputs with multi-lines, and a less deterministic answer
 ```
-$ gpt-cli-chat -t 0.8 -d ';end'
+$ gpt-cli-chat -t 0.8 --delimiter=';end'
 You (press ;end to finish): Hey, would you please,
 tell me what does the command kubectl do?;end
 
