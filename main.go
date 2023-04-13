@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/mitchellh/go-wordwrap"
 	"github.com/pborman/getopt"
@@ -83,10 +84,14 @@ func main() {
 			Content: userInput,
 		})
 
+		stop := make(chan bool)
+		go spinner(10*time.Millisecond, stop)
+
 		output, err := sendMessage(client, messages, float32(t), uint(w))
 		if err != nil {
 			log.Fatal(err)
 		}
+		stop <- true
 		fmt.Println(output)
 	}
 }
@@ -96,7 +101,7 @@ func sendMessage(client *openai.OpenAIClient, messages []openai.Message, t float
 	if err != nil {
 		return "", err
 	} else {
-		return wordwrap.WrapString(fmt.Sprintf("Bot: %v\n", completion.Choices[0].Message.Content), w), nil
+		return wordwrap.WrapString(fmt.Sprintf("\nBot: %v\n", completion.Choices[0].Message.Content), w), nil
 	}
 }
 
@@ -117,4 +122,19 @@ func getUserInput(delim string) string {
 		}
 	}
 	return strings.TrimSuffix(input, delim)
+}
+
+func spinner(delay time.Duration, stop chan bool) {
+	for {
+		for _, r := range `-\|/` {
+			select {
+			case <-stop:
+				fmt.Print("\r")
+				return
+			default:
+				fmt.Printf("\r%c", r)
+				time.Sleep(delay)
+			}
+		}
+	}
 }
