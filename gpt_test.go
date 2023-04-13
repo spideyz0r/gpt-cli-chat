@@ -55,35 +55,3 @@ func TestGetUserInput(t *testing.T) {
 		})
 	}
 }
-
-
-// func TestGetUserInput(t *testing.T) {
-// 	expectedInput := "Hello World\n"
-// 	mockStdin := strings.NewReader("Hello World\n")
-// 	oldStdin := os.Stdin
-
-// 	// Create a temporary file for the mock input
-// 	f, err := ioutil.TempFile("", "")
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	defer os.Remove(f.Name())
-// 	if _, err := io.Copy(f, mockStdin); err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	if _, err := f.Seek(0, 0); err != nil {
-// 		t.Fatal(err)
-// 	}
-
-// 	// Use the temporary file as standard input
-// 	os.Stdin = f
-
-// 	actualInput := getUserInput("\n")
-
-// 	os.Stdin = oldStdin
-
-// 	if actualInput != expectedInput {
-// 		t.Errorf("getUserInput() with newline delimiter returned unexpected result: expected %q, got %q", expectedInput, actualInput)
-// 	}
-// }
-
