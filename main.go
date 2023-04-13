@@ -116,5 +116,5 @@ func getUserInput(delim string) string {
 			break
 		}
 	}
-	return input
+	return strings.TrimSuffix(input, delim)
 }
