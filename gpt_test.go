@@ -1,31 +1,31 @@
 package main
 
 import (
-	"os"
-	"testing"
-	"strings"
 	"io"
 	"io/ioutil"
+	"os"
+	"strings"
+	"testing"
 )
 
 func TestGetUserInput(t *testing.T) {
 	testCases := []struct {
-		name string
-		mockInput string
+		name          string
+		mockInput     string
 		expectedInput string
-		delimiter string
+		delimiter     string
 	}{
 		{
-			name: "Test with newline delimiter",
-			mockInput: "Hello World\n",
+			name:          "Test with newline delimiter",
+			mockInput:     "Hello World\n",
 			expectedInput: "Hello World",
-			delimiter: "\n",
+			delimiter:     "\n",
 		},
 		{
-			name: "Test with , delimiter",
-			mockInput: "Hello World,",
+			name:          "Test with , delimiter",
+			mockInput:     "Hello World,",
 			expectedInput: "Hello World",
-			delimiter: ",",
+			delimiter:     ",",
 		},
 	}
 	for _, tc := range testCases {
