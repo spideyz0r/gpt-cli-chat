@@ -16,20 +16,21 @@ go build -v -o gpt-cli-chat
 
 ## Usage
 ```
-# gpt-cli-chat
-Usage: gpt-cli-chat [-hs] [-a value] [-d value] [-r value] [-t value] [-w value] [parameters ...]
- -a, --api=value  API key (default: OPENAI_API_KEY environment variable)
+# gpt-cli-chat --help
+Usage: gpt-cli-chat [-hs] [-a value] [-d value] [-m value] [-S value] [-t value] [-w value] [parameters ...]
+ -a, --api=value    API key (default: OPENAI_API_KEY environment variable)
  -d, --delimiter=value
-                  set the delimiter for the user input (default: new line)
- -h, --help       display this help
- -r, --system-role=value
-                  system role (default: You're an expert in everything. You
-                  like speaking.)
- -s, --stdin      read the message from stdin and exit (default: false)
+                    set the delimiter for the user input (default: new line)
+ -h, --help         display this help
+ -m, --model=value  gpt chat model (default: gpt-4)
+ -s, --stdin        read the message from stdin and exit (default: false)
+ -S, --system-role=value
+                    system role (default: You're an expert in everything. You
+                    like speaking.)
  -t, --temperature=value
-                  temperature (default: 0.8)
+                    temperature (default: 0.8)
  -w, --output-width=value
-                  output width (default: 80)
+                    output width (default: 80)
 ```
 
 ## Examples
