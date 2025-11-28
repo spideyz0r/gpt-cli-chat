@@ -55,3 +55,33 @@ func TestGetUserInput(t *testing.T) {
 		})
 	}
 }
+
+func TestBuildMessage(t *testing.T) {
+	testCases := []struct {
+		name            string
+		userInput       string
+		internetAccess  bool
+		expectedContain string
+	}{
+		{
+			name:            "Without internet access returns user input unchanged",
+			userInput:       "Hello, how are you?",
+			internetAccess:  false,
+			expectedContain: "Hello, how are you?",
+		},
+		{
+			name:            "Empty input without internet access",
+			userInput:       "",
+			internetAccess:  false,
+			expectedContain: "",
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := buildMessage(tc.userInput, "dummy-key", 0.8, "gpt-4", tc.internetAccess, false)
+			if result != tc.expectedContain {
+				t.Errorf("buildMessage() returned unexpected result: expected %q, got %q", tc.expectedContain, result)
+			}
+		})
+	}
+}
