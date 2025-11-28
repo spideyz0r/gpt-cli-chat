@@ -103,8 +103,10 @@ func sendMessage(client *openai.Client, messages []openai.ChatCompletionMessageP
 	if err != nil {
 		return "", err
 	}
+	if len(chatCompletion.Choices) == 0 {
+		return "", fmt.Errorf("no choices returned from chat completion")
+	}
 	return chatCompletion.Choices[0].Message.Content, nil
-}
 
 func getUserInput(delim string) string {
 	d := delim
