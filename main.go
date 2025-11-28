@@ -58,11 +58,11 @@ func main() {
 
 	if *stdin_input {
 		userInput, err := ioutil.ReadAll(os.Stdin)
-		message := buildMessage(string(userInput), *apiKey, float32(t), *model, *internet_access, *debug)
-		messages = append(messages, openai.UserMessage(string(message)))
 		if err != nil {
 			log.Fatal(err)
 		}
+		message := buildMessage(string(userInput), *apiKey, float32(t), *model, *internet_access, *debug)
+		messages = append(messages, openai.UserMessage(string(message)))
 
 		output, err := sendMessage(&client, messages, float32(t), *model)
 		if err != nil {
