@@ -59,7 +59,7 @@ func main() {
 	if *stdin_input {
 		userInput, err := ioutil.ReadAll(os.Stdin)
 		message := buildMessage(string(userInput), *apiKey, float32(t), *model, *internet_access, *debug)
-		messages = append(messages, openai.UserMessage(string(message)))
+		messages = append(messages, openai.UserMessage(message))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -91,6 +91,7 @@ func main() {
 		}
 		stop <- true
 		fmt.Println(wordwrap.WrapString(fmt.Sprintf("\nBot: %v\n", output), uint(w)))
+		messages = append(messages, openai.AssistantMessage(output))
 	}
 }
 
@@ -107,6 +108,7 @@ func sendMessage(client *openai.Client, messages []openai.ChatCompletionMessageP
 		return "", fmt.Errorf("no choices returned from chat completion")
 	}
 	return chatCompletion.Choices[0].Message.Content, nil
+}
 
 func getUserInput(delim string) string {
 	d := delim
