@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,10 +13,10 @@ import (
 	"time"
 
 	"github.com/mitchellh/go-wordwrap"
+	"github.com/openai/openai-go"
+	"github.com/openai/openai-go/option"
 	"github.com/pborman/getopt"
 	"github.com/sap-nocops/duckduckgogo/client"
-
-	openai "github.com/spideyz0r/openai-go"
 )
 
 func main() {
@@ -50,26 +51,20 @@ func main() {
 		log.Fatal(err)
 	}
 
-	client := openai.NewOpenAIClient(*apiKey)
-	messages := []openai.Message{
-		{
-			Role:    "system",
-			Content: *system_role,
-		},
+	client := openai.NewClient(option.WithAPIKey(*apiKey))
+	messages := []openai.ChatCompletionMessageParamUnion{
+		openai.SystemMessage(*system_role),
 	}
 
 	if *stdin_input {
 		userInput, err := ioutil.ReadAll(os.Stdin)
-		message := buildMessage(string(userInput), *apiKey, float32(t), *model, *internet_access, *debug)
-		messages = append(messages, openai.Message{
-			Role:    "user",
-			Content: string(message),
-		})
 		if err != nil {
 			log.Fatal(err)
 		}
+		message := buildMessage(string(userInput), *apiKey, float32(t), *model, *internet_access, *debug)
+		messages = append(messages, openai.UserMessage(string(message)))
 
-		output, err := sendMessage(client, messages, float32(t), *model)
+		output, err := sendMessage(&client, messages, float32(t), *model)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -89,11 +84,8 @@ func main() {
 		go spinner(10*time.Millisecond, stop)
 
 		message := buildMessage(userInput, *apiKey, float32(t), *model, *internet_access, *debug)
-		messages = append(messages, openai.Message{
-			Role:    "user",
-			Content: message,
-		})
-		output, err := sendMessage(client, messages, float32(t), *model)
+		messages = append(messages, openai.UserMessage(message))
+		output, err := sendMessage(&client, messages, float32(t), *model)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -102,13 +94,19 @@ func main() {
 	}
 }
 
-func sendMessage(client *openai.OpenAIClient, messages []openai.Message, t float32, model string) (string, error) {
-	completion, err := client.GetCompletion(model, messages, t)
+func sendMessage(client *openai.Client, messages []openai.ChatCompletionMessageParamUnion, t float32, model string) (string, error) {
+	chatCompletion, err := client.Chat.Completions.New(context.TODO(), openai.ChatCompletionNewParams{
+		Messages:    messages,
+		Model:       model,
+		Temperature: openai.Float(float64(t)),
+	})
 	if err != nil {
 		return "", err
-	} else {
-		return completion.Choices[0].Message.Content, nil
 	}
+	if len(chatCompletion.Choices) == 0 {
+		return "", fmt.Errorf("no choices returned from chat completion")
+	}
+	return chatCompletion.Choices[0].Message.Content, nil
 }
 
 func getUserInput(delim string) string {
@@ -158,7 +156,7 @@ func internetSearch(query string) (string, error) {
 }
 
 func isRealtimeQuestion(message, apiKey string, t float32, today, model string) (bool, string) {
-	client := openai.NewOpenAIClient(apiKey)
+	client := openai.NewClient(option.WithAPIKey(apiKey))
 	todaydate := time.Now().Format("2006-01-02")
 	messageTemplate := ` I need your answer to be in a json format. {\"real-time\": \"boolean\", \"message\": \"message\"}. Don't say anything other than the json, nothing.
 I am going to ask you a question, consider that today is %s If this question requires real-time access to data, you will answer in the json format with real-time as true and a short message. You don't have the ability to
@@ -166,17 +164,11 @@ access real-time data, so keep that in mind. Question related to a time after yo
 Example: Is the Formula 1 GP today?. After this message I'll send the first question. Just answer with the json.`
 
 	msg_content := fmt.Sprintf(messageTemplate, todaydate)
-	messages := []openai.Message{
-		{
-			Role:    "system",
-			Content: msg_content,
-		},
+	messages := []openai.ChatCompletionMessageParamUnion{
+		openai.SystemMessage(msg_content),
 	}
-	messages = append(messages, openai.Message{
-		Role:    "user",
-		Content: message,
-	})
-	output, err := sendMessage(client, messages, float32(t), model)
+	messages = append(messages, openai.UserMessage(message))
+	output, err := sendMessage(&client, messages, float32(t), model)
 	if err != nil {
 		log.Fatal(err)
 	}
